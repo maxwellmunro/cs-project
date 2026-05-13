@@ -1,8 +1,10 @@
-#include "../include/windowing.h"
+#include "../include/game.h"
 
 int main(void) {
-    Windowing windowing = Windowing_init();
-    Windowing_destroy(&windowing);
+    Game game = Game_init();
+
+    Game_run(game);
+    Game_destroy(game);
 
     return 0;
 }

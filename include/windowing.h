@@ -8,7 +8,7 @@ typedef struct {
     SDL_Renderer *renderer;
 } Windowing;
 
-Windowing Windowing_init();
-void Windowing_destroy(Windowing *windowing);
+Windowing Windowing_init(void);
+void Windowing_destroy(Windowing windowing);
 
 #endif

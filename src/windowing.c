@@ -4,7 +4,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
-Windowing Windowing_init() {
+Windowing Windowing_init(void) {
     SDL_Init(SDL_INIT_EVERYTHING);
 
     SDL_Window *window = SDL_CreateWindow(
@@ -25,8 +25,8 @@ Windowing Windowing_init() {
     return (Windowing) { window, renderer };
 }
 
-void Windowing_destroy(Windowing *windowing) {
-    SDL_DestroyRenderer(windowing->renderer);
-    SDL_DestroyWindow(windowing->window);
+void Windowing_destroy(Windowing windowing) {
+    SDL_DestroyRenderer(windowing.renderer);
+    SDL_DestroyWindow(windowing.window);
     SDL_Quit();
 }
