@@ -1,6 +1,8 @@
-#include <stdio.h>
+#include "../include/windowing.h"
 
 int main(void) {
-    printf("Hello, World!\n");
+    Windowing windowing = Windowing_init();
+    Windowing_destroy(&windowing);
+
     return 0;
 }

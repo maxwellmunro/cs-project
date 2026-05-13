@@ -9,6 +9,7 @@ find_package(SDL2_image REQUIRED)
 
 add_executable(cs-project
     src/main.c
+    src/windowing.c
 )
 
 target_link_libraries(cs-project PRIVATE SDL2::SDL2)
