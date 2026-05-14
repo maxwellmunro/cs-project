@@ -2,10 +2,16 @@
 #include "../include/event_handler.h"
 #include <SDL2/SDL_stdinc.h>
 
-Game Game_init(void) {
-    Windowing windowing = Windowing_init();
+int Game_init(Game *game) {
+    Windowing windowing;
+    if (Windowing_init(&windowing)) {
+        return -1;
+    }
 
-    return (Game){windowing, false};
+    game->windowing = windowing;
+    game->running = false;
+
+    return 0;
 }
 
 void Game_destroy(Game game) {

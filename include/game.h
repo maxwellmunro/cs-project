@@ -9,7 +9,7 @@ typedef struct Game {
     bool running;
 } Game;
 
-Game Game_init(void);
+int Game_init(Game *game);
 void Game_destroy(Game game);
 
 void Game_run(Game game);

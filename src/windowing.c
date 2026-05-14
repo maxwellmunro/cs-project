@@ -3,9 +3,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+#include <stdio.h>
 
-Windowing Windowing_init(void) {
-    SDL_Init(SDL_INIT_EVERYTHING);
+int Windowing_init(Windowing *windowing) {
+    if (SDL_Init(SDL_INIT_EVERYTHING)) {
+       printf("Error initialising SDL2: %s\n", SDL_GetError()); 
+       return -1;
+    }
 
     SDL_Window *window = SDL_CreateWindow(
             WINDOW_TITLE,
@@ -16,13 +20,26 @@ Windowing Windowing_init(void) {
             SDL_WINDOW_SHOWN
         );
 
+    if (!window) {
+        printf("Error initialising window: %s\n", SDL_GetError());
+        return -2;
+    }
+
     SDL_Renderer *renderer= SDL_CreateRenderer(
             window,
             -1,
             SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
         );
 
-    return (Windowing) { window, renderer };
+    if (!renderer) {
+        printf("Error initialising renderer: %s\n", SDL_GetError());
+        return -3;
+    }
+
+    windowing->window = window;
+    windowing->renderer = renderer;
+
+    return 0;
 }
 
 void Windowing_destroy(Windowing windowing) {
