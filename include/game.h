@@ -1,11 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "texture_handler.h"
 #include "windowing.h"
 #include <stdbool.h>
 
 typedef struct Game {
     Windowing windowing;
+    Textures textures;
     bool running;
 } Game;
 

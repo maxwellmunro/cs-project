@@ -1,6 +1,7 @@
 #include "../include/windowing.h"
 #include "../include/constants.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
@@ -9,6 +10,11 @@ int Windowing_init(Windowing *windowing) {
     if (SDL_Init(SDL_INIT_EVERYTHING)) {
        printf("Error initialising SDL2: %s\n", SDL_GetError()); 
        return -1;
+    }
+
+    if (!IMG_Init(IMG_INIT_PNG)) {
+        printf("Error initialising SDL2_image: %s\n", SDL_GetError());
+        return -2;
     }
 
     SDL_Window *window = SDL_CreateWindow(

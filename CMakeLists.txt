@@ -12,6 +12,7 @@ add_executable(cs-project
     src/windowing.c
     src/game.c
     src/event_handler.c
+    src/texture_handler.c
 )
 
 target_link_libraries(cs-project PRIVATE SDL2::SDL2)

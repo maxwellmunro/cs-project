@@ -8,7 +8,13 @@ int Game_init(Game *game) {
         return -1;
     }
 
+    Textures textures;
+    if (Textures_init(&textures, windowing.renderer)) {
+        return -2;
+    }
+
     game->windowing = windowing;
+    game->textures = textures;
     game->running = false;
 
     return 0;
@@ -45,6 +51,9 @@ void Game_render(Game game) {
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    SDL_Rect rect = { 0, 0, game.textures.pieces.w * 4, game.textures.pieces.h * 4 };
+    SDL_RenderCopy(renderer, game.textures.pieces.tex, NULL, &rect);
 
     SDL_RenderPresent(renderer);
 }
