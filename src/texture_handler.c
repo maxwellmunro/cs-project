@@ -37,6 +37,7 @@ int Textures_init(Textures *textures, SDL_Renderer *renderer) {
     Texture texture;
     
     init_texture(pieces, "res/pieces.png")
+    init_texture(board, "res/board.png")
 
     return 0;
 }

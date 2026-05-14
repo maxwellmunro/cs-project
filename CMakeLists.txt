@@ -13,6 +13,9 @@ add_executable(cs-project
     src/game.c
     src/event_handler.c
     src/texture_handler.c
+    src/piece.c
+    src/board.c
+    src/math.c
 )
 
 target_link_libraries(cs-project PRIVATE SDL2::SDL2)
