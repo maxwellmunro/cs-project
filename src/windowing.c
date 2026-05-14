@@ -1,5 +1,5 @@
 #include "../include/windowing.h"
-#include "constants.h"
+#include "../include/constants.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
