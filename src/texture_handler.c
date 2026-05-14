@@ -27,17 +27,19 @@ int load_texture(Texture *texture, SDL_Renderer *renderer,
 }
 
 #define init_texture(id, path)                                                 \
-    if (!load_texture(&texture, renderer, path)) {                             \
-        textures->id = texture;                                                \
-    } else {                                                                   \
-        return -1;                                                             \
-    }
+    do {                                                                       \
+        if (!load_texture(&texture, renderer, path)) {                         \
+            textures->id = texture;                                            \
+        } else {                                                               \
+            return -1;                                                         \
+        }                                                                      \
+    } while (0)
 
 int Textures_init(Textures *textures, SDL_Renderer *renderer) {
     Texture texture;
-    
-    init_texture(pieces, "res/pieces.png")
-    init_texture(board, "res/board.png")
+
+    init_texture(pieces, "res/pieces.png");
+    init_texture(board, "res/board.png");
 
     return 0;
 }
