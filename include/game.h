@@ -3,11 +3,13 @@
 
 #include "texture_handler.h"
 #include "windowing.h"
+#include "board.h"
 #include <stdbool.h>
 
 typedef struct Game {
     Windowing windowing;
     Textures textures;
+    Board board;
     bool running;
 } Game;
 

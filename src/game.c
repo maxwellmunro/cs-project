@@ -1,7 +1,6 @@
 #include "../include/game.h"
 #include "../include/board.h"
 #include "../include/event_handler.h"
-#include "../include/piece.h"
 #include <SDL2/SDL_stdinc.h>
 
 int Game_init(Game *game) {
@@ -17,6 +16,7 @@ int Game_init(Game *game) {
 
     game->windowing = windowing;
     game->textures = textures;
+    game->board = Board_init();
     game->running = false;
 
     return 0;
@@ -52,8 +52,7 @@ void Game_render(Game game) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    Board board = Board_init();
-    Board_render(&board, game.textures, game.windowing);
+    Board_render(&game.board, game.textures, game.windowing);
 
     SDL_RenderPresent(renderer);
 }
