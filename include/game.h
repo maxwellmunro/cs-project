@@ -10,7 +10,11 @@ typedef struct Game {
     Windowing windowing;
     Textures textures;
     Board board;
+
     bool running;
+
+    int selected_x;
+    int selected_y;
 } Game;
 
 int Game_init(Game *game);

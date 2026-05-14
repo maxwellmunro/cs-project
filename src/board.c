@@ -39,3 +39,21 @@ void Board_render(Board *board, Textures textures, Windowing windowing) {
         Piece_render(board->pieces[i], textures, windowing, cx, cy);
     }
 }
+
+Piece *Board_get_piece(Board *board, int x, int y) {
+    if (x < 0 || y < 0 || x > 7 || y > 7)
+        return NULL;
+
+    return &board->pieces[y * 8 + x];
+}
+
+void Board_set_piece(Board *board, Piece piece, int x, int y) {
+    board->pieces[y * 8 + x] = piece;
+}
+
+int Board_move_piece(Board *board, int sx, int sy, int dx, int dy) {
+    Board_set_piece(board, *Board_get_piece(board, sx, sy), dx, dy);
+    Board_set_piece(board, Piece_init(EMPTY), sx, sy);
+
+    return 0; // TODO currently just moves pieces need to implement move validation
+}

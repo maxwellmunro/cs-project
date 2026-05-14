@@ -1,5 +1,6 @@
 #include "../include/game.h"
 #include "../include/board.h"
+#include "../include/constants.h"
 #include "../include/event_handler.h"
 #include <SDL2/SDL_stdinc.h>
 
@@ -18,6 +19,8 @@ int Game_init(Game *game) {
     game->textures = textures;
     game->board = Board_init();
     game->running = false;
+
+    game->selected_x = BOARD_UNSELECTED_X_SENTINEL;
 
     return 0;
 }
