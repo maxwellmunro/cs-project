@@ -4,6 +4,7 @@
 #include "texture_handler.h"
 #include "windowing.h"
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 
 typedef enum {
     EMPTY = -1,
@@ -29,5 +30,6 @@ typedef struct {
 
 Piece Piece_init(PieceType type);
 void Piece_render(Piece piece, Textures textures, Windowing windowing, int cx, int cy);
+bool Piece_is_white(Piece piece);
 
 #endif

@@ -52,8 +52,136 @@ void Board_set_piece(Board *board, Piece piece, int x, int y) {
 }
 
 int Board_move_piece(Board *board, int sx, int sy, int dx, int dy) {
+    if (!Board_is_valid_move(board, sx, sy, dx, dy))
+        return -1;
+
+    board->last_two_square_advance_x = -1;
+
+    if ((sy == 1 || sy == 6) && Board_get_piece(board, sx, sy)->type == W_PAWN || Board_get_piece(board, sx, sy)->type == B_PAWN) {
+        board->last_two_square_advance_y = sy;
+        board->last_two_square_advance_x = sx;
+    }
+
+    if ((Board_get_piece(board, sx, sy)->type == W_PAWN || Board_get_piece(board, sx, sy)->type == B_PAWN)
+            && Board_get_piece(board, dx, dy)->type == EMPTY
+            && sx != dx) {
+        Board_set_piece(board, Piece_init(EMPTY), dx, sy);
+    }
+
     Board_set_piece(board, *Board_get_piece(board, sx, sy), dx, dy);
     Board_set_piece(board, Piece_init(EMPTY), sx, sy);
 
-    return 0; // TODO currently just moves pieces need to implement move validation
+    return 0;
+}
+
+bool Board_is_valid_move(Board *board, int sx, int sy, int dx, int dy) {
+    if (sx == dx && sy == dy) 
+        return false;
+
+    Piece *src = Board_get_piece(board, sx, sy);
+    Piece *dst = Board_get_piece(board, dx, dy);
+
+    bool s_white = Piece_is_white(*src);
+    bool d_white = Piece_is_white(*dst);
+
+    if (s_white == d_white && dst->type != EMPTY)
+        return false;
+
+    switch (src->type) {
+    case EMPTY:
+        return false;
+    case B_PAWN:
+        return (sx == dx && sy == 1 && dy == 2)
+            || (sx == dx && sy == 1 && dy == 3 && Board_get_piece(board, sx, 2)->type == EMPTY)
+            || (abs(sx - dx) == 1 && dy == sy + 1 && Board_get_piece(board, dx, dy)->type != EMPTY)
+            || (abs(sx - dx) == 1 && dx == board->last_two_square_advance_x && sy == 4 && dy == 5 && board->last_two_square_advance_y == 6)
+            || (sx == dx && dy == sy + 1 && dst->type == EMPTY);
+    case W_ROOK:
+    case B_ROOK:
+        if (sx != dx && sy != dy)
+            return false;
+
+        if (sy == dy) {
+            for (int x = sx; x != dx; x += (dx > sx ? 1 : -1)) {
+                if (x == sx)
+                    continue;
+
+                if (Board_get_piece(board, x, sy)->type != EMPTY)
+                    return false;
+            }
+        } else {
+            for (int y = sy; y != dy; y += (dy > sy ? 1 : -1)) {
+                if (y == sy)
+                    continue;
+
+                if (Board_get_piece(board, sx, y)->type != EMPTY)
+                    return false;
+            }
+
+        }
+
+        return true;
+    case W_BISHOP:
+    case B_BISHOP:
+        if (abs(sx - dx) != abs(sy - dy))
+            return false;
+
+        for (int x = sx, y = sy; x != dx && y != dy; x += (dx > sx ? 1 : -1), y += (dy > sy ? 1 : -1)) {
+            if (x == sx)
+                continue;
+
+            if (Board_get_piece(board, x, y)->type != EMPTY)
+                return false;
+        }
+
+        return true;
+    case W_KNIGHT:
+    case B_KNIGHT:
+        return abs(abs(dx - sx) - (abs(dy - sy))) == 1 && dx != sx && dy != sy;
+    case W_QUEEN:
+    case B_QUEEN:
+        if (sy == dy) {
+            for (int x = sx; x != dx; x += (dx > sx ? 1 : -1)) {
+                if (x == sx)
+                    continue;
+
+                if (Board_get_piece(board, x, sy)->type != EMPTY)
+                    return false;
+            }
+
+            return true;
+        } else if (sx == dx) {
+            for (int y = sy; y != dy; y += (dy > sy ? 1 : -1)) {
+                if (y == sy)
+                    continue;
+
+                if (Board_get_piece(board, sx, y)->type != EMPTY)
+                    return false;
+            }
+
+            return true;
+        }
+
+        if (abs(sx - dx) != abs(sy - dy))
+            return false;
+
+        for (int x = sx, y = sy; x != dx && y != dy; x += (dx > sx ? 1 : -1), y += (dy > sy ? 1 : -1)) {
+            if (x == sx)
+                continue;
+
+            if (Board_get_piece(board, x, y)->type != EMPTY)
+                return false;
+        }
+
+        return true;
+    case W_KING:
+    case B_KING:
+        return abs(sx - dx) <= 1 && abs(sy - dy) <= 1;
+    case W_PAWN:
+        return (sx == dx && sy == 6 && dy == 5)
+            || (sx == dx && sy == 6 && dy == 4 && Board_get_piece(board, sx, 5)->type == EMPTY)
+            || (abs(sx - dx) == 1 && dy == sy - 1 && Board_get_piece(board, dx, dy)->type != EMPTY)
+            || (abs(sx - dx) == 1 && dx == board->last_two_square_advance_x && sy == 3 && dy == 2 && board->last_two_square_advance_y == 1)
+            || (sx == dx && dy == sy - 1 && dst->type == EMPTY);
+    }
 }

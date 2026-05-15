@@ -60,8 +60,10 @@ void handle_board_piece_move(int button, bool pressed, int x, int y, Game *game)
                     game->selected_x = cx;
                     game->selected_y = cy;
                 } else {
-                    Board_move_piece(&game->board, game->selected_x, game->selected_y, cx, cy);
-                    game->selected_x = BOARD_UNSELECTED_X_SENTINEL;
+                    if (Board_is_valid_move(&game->board, game->selected_x, game->selected_y, cx, cy)) {
+                        Board_move_piece(&game->board, game->selected_x, game->selected_y, cx, cy);
+                        game->selected_x = BOARD_UNSELECTED_X_SENTINEL;
+                    }
                 }
 
                 return;

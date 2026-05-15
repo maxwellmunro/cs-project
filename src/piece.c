@@ -21,3 +21,23 @@ void Piece_render(Piece piece, Textures textures, Windowing windowing, int cx, i
 
     SDL_RenderCopy(windowing.renderer, textures.pieces.tex, &src, &dst);
 }
+
+bool Piece_is_white(Piece piece) {
+    switch (piece.type) {
+    case EMPTY:
+    case B_PAWN:
+    case B_ROOK:
+    case B_BISHOP:
+    case B_KNIGHT:
+    case B_QUEEN:
+    case B_KING:
+        return false;
+    case W_PAWN:
+    case W_ROOK:
+    case W_BISHOP:
+    case W_KNIGHT:
+    case W_QUEEN:
+    case W_KING:
+        return true;
+    }
+}
