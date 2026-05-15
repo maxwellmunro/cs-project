@@ -4,20 +4,23 @@
 
 Board Board_init() {
     return (Board){
-        {
-            B_ROOK, B_KNIGHT, B_BISHOP, B_QUEEN, B_KING, B_BISHOP, B_KNIGHT,
-            B_ROOK, B_PAWN,   B_PAWN,   B_PAWN,  B_PAWN, B_PAWN,   B_PAWN,
-            B_PAWN, B_PAWN,   EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
-            EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
-            EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
-            EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
-            EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    W_PAWN,
-            W_PAWN, W_PAWN,   W_PAWN,   W_PAWN,  W_PAWN, W_PAWN,   W_PAWN,
-            W_ROOK, W_KNIGHT, W_BISHOP, W_QUEEN, W_KING, W_BISHOP, W_KNIGHT,
-            W_ROOK,
-        },
+        .pieces =
+            {
+                B_ROOK, B_KNIGHT, B_BISHOP, B_QUEEN, B_KING, B_BISHOP, B_KNIGHT,
+                B_ROOK, B_PAWN,   B_PAWN,   B_PAWN,  B_PAWN, B_PAWN,   B_PAWN,
+                B_PAWN, B_PAWN,   EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
+                EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
+                EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
+                EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    EMPTY,
+                EMPTY,  EMPTY,    EMPTY,    EMPTY,   EMPTY,  EMPTY,    W_PAWN,
+                W_PAWN, W_PAWN,   W_PAWN,   W_PAWN,  W_PAWN, W_PAWN,   W_PAWN,
+                W_ROOK, W_KNIGHT, W_BISHOP, W_QUEEN, W_KING, W_BISHOP, W_KNIGHT,
+                W_ROOK,
+            },
         .last_two_square_advance_x = -1,
         .white_to_move = true,
+        .white_king_moved = false,
+        .black_king_moved = false,
     };
 }
 
@@ -66,6 +69,8 @@ int Board_move_piece(Board *board, int sx, int sy, int dx, int dy) {
         return -2;
     }
 
+    printf("Moving %i, %i to %i, %i\n", sx, sy, dx, dy);
+
     board->white_to_move = !board->white_to_move;
 
     board->last_two_square_advance_x = -1;
@@ -82,6 +87,13 @@ int Board_move_piece(Board *board, int sx, int sy, int dx, int dy) {
         Board_get_piece(board, dx, dy)->type == EMPTY && sx != dx) {
         Board_set_piece(board, Piece_init(EMPTY), dx, sy);
     }
+
+    //    if (Board_get_piece(board, sx, sy)->type == B_KING)
+    //        board->black_king_moved = true;
+    //
+    //    if (Board_get_piece(board, sx, sy)->type == W_KING)
+    //        board->white_king_moved = true;
+
 
     Board_set_piece(board, *Board_get_piece(board, sx, sy), dx, dy);
     Board_set_piece(board, Piece_init(EMPTY), sx, sy);
@@ -195,6 +207,53 @@ bool Board_is_valid_move(Board *board, int sx, int sy, int dx, int dy) {
         return true;
     case W_KING:
     case B_KING:
+        if (!board->white_to_move && !board->black_king_moved) {
+            if (sy == 0 && sx == 4) {
+                if (dx == 1) {
+                    if (Board_get_piece(board, 0, 0)->type == B_ROOK &&
+                        Board_get_piece(board, 1, 0)->type == EMPTY &&
+                        Board_get_piece(board, 2, 0)->type == EMPTY &&
+                        Board_get_piece(board, 3, 0)->type == EMPTY) {
+                        Board_set_piece(board, *Board_get_piece(board, 0, 0), 2, 0);
+                        Board_set_piece(board, Piece_init(EMPTY), 0, 0);
+                        return true;
+                    }
+                } else if (dx == 6) {
+                    if (Board_get_piece(board, 5, 0)->type == EMPTY &&
+                        Board_get_piece(board, 6, 0)->type == EMPTY &&
+                        Board_get_piece(board, 7, 0)->type == B_ROOK) {
+                        Board_set_piece(board, *Board_get_piece(board, 7, 0), 5, 0);
+                        Board_set_piece(board, Piece_init(EMPTY), 7, 0);
+                        return true;
+                    }
+                }
+            }
+        }
+        if (board->white_to_move && !board->white_king_moved) {
+            if (sy == 7 && sx == 4) {
+                if (dx == 1) {
+                    if (Board_get_piece(board, 0, 7)->type == W_ROOK &&
+                        Board_get_piece(board, 1, 7)->type == EMPTY &&
+                        Board_get_piece(board, 2, 7)->type == EMPTY &&
+                        Board_get_piece(board, 3, 7)->type == EMPTY) {
+                        Board_set_piece(board, *Board_get_piece(board, 0, 7), 2, 7);
+                        Board_set_piece(board, Piece_init(EMPTY), 0, 7);
+                        return true;
+                    }
+                } else if (dx == 6) {
+                    if (Board_get_piece(board, 5, 7)->type == EMPTY &&
+                        Board_get_piece(board, 6, 7)->type == EMPTY &&
+                        Board_get_piece(board, 7, 7)->type == W_ROOK) {
+                        Board_set_piece(board, *Board_get_piece(board, 7, 7), 5, 7);
+                        Board_set_piece(board, Piece_init(EMPTY), 7, 7);
+                        printf("Returning true\n");
+                        return true;
+                    }
+
+                    printf("Did not return true\n");
+                }
+            }
+        }
         return abs(sx - dx) <= 1 && abs(sy - dy) <= 1;
     case W_PAWN:
         return (sx == dx && sy == 6 && dy == 5) ||

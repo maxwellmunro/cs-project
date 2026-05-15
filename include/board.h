@@ -12,6 +12,9 @@ typedef struct {
     int last_two_square_advance_y;
 
     bool white_to_move;
+
+    bool white_king_moved;
+    bool black_king_moved;
 } Board;
 
 Board Board_init();
