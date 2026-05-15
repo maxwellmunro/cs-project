@@ -10,6 +10,8 @@ typedef struct {
 
     int last_two_square_advance_x;
     int last_two_square_advance_y;
+
+    bool white_to_move;
 } Board;
 
 Board Board_init();
