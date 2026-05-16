@@ -57,15 +57,20 @@ void handle_board_piece_move(int button, bool pressed, int x, int y,
 
     for (int cx = 0; cx < 8; ++cx) {
         for (int cy = 0; cy < 8; ++cy) {
+#if 0
             int x = dx + cx * BOARD_CELL_LENGTH * scale +
                     (BOARD_CELL_LENGTH - PIECE_TEXTURE_WIDTH) * (scale / 2);
             int y = dy + cy * BOARD_CELL_LENGTH * scale +
                     (BOARD_CELL_LENGTH - PIECE_TEXTURE_WIDTH -
                      PIECE_TEXTURE_HEIGHT) *
                         (scale / 2);
+#endif
 
-            SDL_Rect dst = {x, y, PIECE_TEXTURE_WIDTH * scale,
-                            PIECE_TEXTURE_HEIGHT * scale};
+            int x = dx + cx * BOARD_CELL_LENGTH * scale;
+            int y = dy + cy * BOARD_CELL_LENGTH * scale;
+
+            SDL_Rect dst = {x, y, BOARD_CELL_LENGTH * scale,
+                            BOARD_CELL_LENGTH * scale};
 
             if (SDL_PointInRect(&ml, &dst)) {
                 if (pressed) {
@@ -111,8 +116,8 @@ void handle_promoting_buttons(int button, bool pressed, int x, int y,
     int width, height;
     SDL_GetWindowSize(game->windowing.window, &width, &height);
 
-    int scale = min(width / (BOARD_PIXELS_LENGTH + BOARD_HORIZONTAL_MARGIN),
-                    height / (BOARD_PIXELS_LENGTH + BOARD_VERTICAL_MARGIN));
+    int scale = min(width / (BOARD_PIXELS_LENGTH + 2 * BOARD_HORIZONTAL_MARGIN),
+                    height / (BOARD_PIXELS_LENGTH + 2 * BOARD_VERTICAL_MARGIN));
 
     int dx = (width - scale * BOARD_PIXELS_LENGTH) / 2;
     int dy = (height - scale * BOARD_PIXELS_LENGTH) / 2;
@@ -123,6 +128,7 @@ void handle_promoting_buttons(int button, bool pressed, int x, int y,
 
     for (int i = 0; i < 4; ++i) {
         Texture buttons = game->textures.promotion_buttons;
+        
         SDL_Rect rect = {
             button_x +
                 i * scale * (PROMOTION_BUTTON_WIDTH + PROMOTION_BUTTON_SPACING),
