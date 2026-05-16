@@ -29,7 +29,7 @@ typedef struct {
 } Piece;
 
 Piece Piece_init(PieceType type);
-void Piece_render(Piece piece, Textures textures, Windowing windowing, int cx, int cy);
+void Piece_render(Piece piece, Textures textures, Windowing windowing, int cx, int cy, int scale);
 bool Piece_is_white(Piece piece);
 
 #endif

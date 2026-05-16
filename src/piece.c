@@ -1,14 +1,11 @@
 #include "../include/piece.h"
 #include "../include/constants.h"
-#include "../include/math.h"
 
 Piece Piece_init(PieceType type) { return (Piece){type}; }
 
-void Piece_render(Piece piece, Textures textures, Windowing windowing, int cx, int cy) {
+void Piece_render(Piece piece, Textures textures, Windowing windowing, int cx, int cy, int scale) {
     int width, height;
     SDL_GetWindowSize(windowing.window, &width, &height);
-
-    int scale = min(width / BOARD_PIXELS_LENGTH, (height - BOARD_VERTICAL_MARGIN) / BOARD_PIXELS_LENGTH);
 
     int dx = (width - scale * BOARD_PIXELS_LENGTH) / 2;
     int dy = (height - scale * BOARD_PIXELS_LENGTH) / 2;

@@ -15,6 +15,8 @@ typedef struct Game {
 
     int selected_x;
     int selected_y;
+
+    bool promoting;
 } Game;
 
 int Game_init(Game *game);

@@ -40,6 +40,7 @@ int Textures_init(Textures *textures, SDL_Renderer *renderer) {
 
     init_texture(pieces, "res/pieces.png");
     init_texture(board, "res/board.png");
+    init_texture(promotion_buttons, "res/promotion_buttons.png");
 
     return 0;
 }

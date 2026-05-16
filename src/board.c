@@ -1,6 +1,5 @@
 #include "../include/board.h"
 #include "../include/constants.h"
-#include "../include/math.h"
 
 Board Board_init() {
     return (Board){
@@ -24,12 +23,10 @@ Board Board_init() {
     };
 }
 
-void Board_render(Board *board, Textures textures, Windowing windowing) {
+void Board_render(Board *board, Textures textures, Windowing windowing,
+                  int scale) {
     int width, height;
     SDL_GetWindowSize(windowing.window, &width, &height);
-
-    int scale = min(width / BOARD_PIXELS_LENGTH,
-                    (height - BOARD_VERTICAL_MARGIN) / BOARD_PIXELS_LENGTH);
 
     int dx = (width - scale * BOARD_PIXELS_LENGTH) / 2;
     int dy = (height - scale * BOARD_PIXELS_LENGTH) / 2;
@@ -45,7 +42,7 @@ void Board_render(Board *board, Textures textures, Windowing windowing) {
         int cx = i % 8;
         int cy = i / 8;
 
-        Piece_render(board->pieces[i], textures, windowing, cx, cy);
+        Piece_render(board->pieces[i], textures, windowing, cx, cy, scale);
     }
 }
 
@@ -71,7 +68,6 @@ int Board_move_piece(Board *board, int sx, int sy, int dx, int dy) {
 
     printf("Moving %i, %i to %i, %i\n", sx, sy, dx, dy);
 
-    board->white_to_move = !board->white_to_move;
 
     board->last_two_square_advance_x = -1;
 
@@ -94,9 +90,17 @@ int Board_move_piece(Board *board, int sx, int sy, int dx, int dy) {
     //    if (Board_get_piece(board, sx, sy)->type == W_KING)
     //        board->white_king_moved = true;
 
-
     Board_set_piece(board, *Board_get_piece(board, sx, sy), dx, dy);
     Board_set_piece(board, Piece_init(EMPTY), sx, sy);
+
+    if ((dy == 0 || dy == 7) &&
+        (Board_get_piece(board, dx, dy)->type == B_PAWN ||
+         Board_get_piece(board, dx, dy)->type == W_PAWN)) {
+        board->promoting_x = dx;
+        board->promoting_y = dy;
+    } else {
+        board->white_to_move = !board->white_to_move;
+    }
 
     return 0;
 }
@@ -214,7 +218,8 @@ bool Board_is_valid_move(Board *board, int sx, int sy, int dx, int dy) {
                         Board_get_piece(board, 1, 0)->type == EMPTY &&
                         Board_get_piece(board, 2, 0)->type == EMPTY &&
                         Board_get_piece(board, 3, 0)->type == EMPTY) {
-                        Board_set_piece(board, *Board_get_piece(board, 0, 0), 2, 0);
+                        Board_set_piece(board, *Board_get_piece(board, 0, 0), 2,
+                                        0);
                         Board_set_piece(board, Piece_init(EMPTY), 0, 0);
                         return true;
                     }
@@ -222,7 +227,8 @@ bool Board_is_valid_move(Board *board, int sx, int sy, int dx, int dy) {
                     if (Board_get_piece(board, 5, 0)->type == EMPTY &&
                         Board_get_piece(board, 6, 0)->type == EMPTY &&
                         Board_get_piece(board, 7, 0)->type == B_ROOK) {
-                        Board_set_piece(board, *Board_get_piece(board, 7, 0), 5, 0);
+                        Board_set_piece(board, *Board_get_piece(board, 7, 0), 5,
+                                        0);
                         Board_set_piece(board, Piece_init(EMPTY), 7, 0);
                         return true;
                     }
@@ -236,7 +242,8 @@ bool Board_is_valid_move(Board *board, int sx, int sy, int dx, int dy) {
                         Board_get_piece(board, 1, 7)->type == EMPTY &&
                         Board_get_piece(board, 2, 7)->type == EMPTY &&
                         Board_get_piece(board, 3, 7)->type == EMPTY) {
-                        Board_set_piece(board, *Board_get_piece(board, 0, 7), 2, 7);
+                        Board_set_piece(board, *Board_get_piece(board, 0, 7), 2,
+                                        7);
                         Board_set_piece(board, Piece_init(EMPTY), 0, 7);
                         return true;
                     }
@@ -244,7 +251,8 @@ bool Board_is_valid_move(Board *board, int sx, int sy, int dx, int dy) {
                     if (Board_get_piece(board, 5, 7)->type == EMPTY &&
                         Board_get_piece(board, 6, 7)->type == EMPTY &&
                         Board_get_piece(board, 7, 7)->type == W_ROOK) {
-                        Board_set_piece(board, *Board_get_piece(board, 7, 7), 5, 7);
+                        Board_set_piece(board, *Board_get_piece(board, 7, 7), 5,
+                                        7);
                         Board_set_piece(board, Piece_init(EMPTY), 7, 7);
                         printf("Returning true\n");
                         return true;

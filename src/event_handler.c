@@ -31,7 +31,10 @@ void handle_key_event(SDL_KeyCode key, bool pressed, Game *game) {
 }
 
 void handle_mouse_event(int button, bool pressed, int x, int y, Game *game) {
-    handle_board_piece_move(button, pressed, x, y, game);
+    if (game->promoting)
+        handle_promoting_buttons(button, pressed, x, y, game);
+    else
+        handle_board_piece_move(button, pressed, x, y, game);
 }
 
 void handle_board_piece_move(int button, bool pressed, int x, int y,
@@ -40,8 +43,8 @@ void handle_board_piece_move(int button, bool pressed, int x, int y,
     int width, height;
     SDL_GetWindowSize(game->windowing.window, &width, &height);
 
-    int scale = min(width / BOARD_PIXELS_LENGTH,
-                    (height - BOARD_VERTICAL_MARGIN) / BOARD_PIXELS_LENGTH);
+    int scale = min(width / (BOARD_PIXELS_LENGTH + 2 * BOARD_HORIZONTAL_MARGIN),
+                    height / (BOARD_PIXELS_LENGTH + 2 * BOARD_VERTICAL_MARGIN));
 
     int dx = (width - scale * BOARD_PIXELS_LENGTH) / 2;
     int dy = (height - scale * BOARD_PIXELS_LENGTH) / 2;
@@ -69,13 +72,73 @@ void handle_board_piece_move(int button, bool pressed, int x, int y,
                     game->selected_x = cx;
                     game->selected_y = cy;
                 } else {
-                    Board_move_piece(&game->board, game->selected_x,
-                                     game->selected_y, cx, cy);
+                    if (!Board_move_piece(&game->board, game->selected_x,
+                                          game->selected_y, cx, cy)) {
+                        game->promoting =
+                            (cy == 0 || cy == 7) &&
+                            (Board_get_piece(&game->board, cx, cy)->type ==
+                                 B_PAWN ||
+                             Board_get_piece(&game->board, cx, cy)->type ==
+                                 W_PAWN);
+                    }
                     game->selected_x = BOARD_UNSELECTED_X_SENTINEL;
                 }
 
                 return;
             }
+        }
+    }
+}
+
+PieceType get_type_from_button_index(int idx, bool white) {
+    switch (idx) {
+    case 0:
+        return white ? W_ROOK : B_ROOK;
+    case 1:
+        return white ? W_BISHOP : B_BISHOP;
+    case 2:
+        return white ? W_KNIGHT : B_KNIGHT;
+    case 3:
+        return white ? W_QUEEN : B_QUEEN;
+    }
+
+    return EMPTY;
+}
+
+void handle_promoting_buttons(int button, bool pressed, int x, int y,
+                              Game *game) {
+    SDL_Point ml = {x, y};
+    int width, height;
+    SDL_GetWindowSize(game->windowing.window, &width, &height);
+
+    int scale = min(width / (BOARD_PIXELS_LENGTH + BOARD_HORIZONTAL_MARGIN),
+                    height / (BOARD_PIXELS_LENGTH + BOARD_VERTICAL_MARGIN));
+
+    int dx = (width - scale * BOARD_PIXELS_LENGTH) / 2;
+    int dy = (height - scale * BOARD_PIXELS_LENGTH) / 2;
+
+    int total_width = 4 * PROMOTION_BUTTON_WIDTH + 3 * PROMOTION_BUTTON_SPACING;
+
+    int button_x = dx + (BOARD_PIXELS_LENGTH - total_width) * scale / 2;
+
+    for (int i = 0; i < 4; ++i) {
+        Texture buttons = game->textures.promotion_buttons;
+        SDL_Rect rect = {
+            button_x +
+                i * scale * (PROMOTION_BUTTON_WIDTH + PROMOTION_BUTTON_SPACING),
+            dy - scale * (PROMOTION_BUTTON_SPACING + buttons.h),
+            PROMOTION_BUTTON_WIDTH * scale, buttons.h * scale};
+
+        if (SDL_PointInRect(&ml, &rect)) {
+            Board_set_piece(&game->board,
+                            Piece_init(get_type_from_button_index(
+                                i, game->board.white_to_move)),
+                            game->board.promoting_x, game->board.promoting_y);
+
+            game->board.white_to_move ^= 1;
+            game->promoting = false;
+
+            return;
         }
     }
 }

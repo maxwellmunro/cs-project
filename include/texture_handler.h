@@ -13,6 +13,7 @@ typedef struct {
 typedef struct {
     Texture pieces;
     Texture board;
+    Texture promotion_buttons;
 } Textures;
 
 int load_texture(Texture *texture, SDL_Renderer *renderer, const char *filepath);

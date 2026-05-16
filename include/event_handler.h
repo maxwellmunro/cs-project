@@ -9,5 +9,8 @@ void handle_key_event(SDL_KeyCode key, bool pressed, Game *game);
 void handle_mouse_event(int button, bool pressed, int x, int y, Game *game);
 
 void handle_board_piece_move(int button, bool pressed, int x, int y, Game *game);
+void handle_promoting_buttons(int button, bool pressed, int x, int y, Game *game);
+
+PieceType get_type_from_button_index(int idx, bool white);
 
 #endif
